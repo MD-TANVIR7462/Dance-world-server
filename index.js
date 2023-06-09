@@ -32,6 +32,7 @@ async function run() {
     const database = client.db("DanceProjectDB");
     const AllusersCollection = database.collection("Allusers");
     const insClassCollection = database.collection("ClassCollection");
+    const MyBookmarkCollection = database.collection("MyBookmarkCollection");
 
 
 // userCollection===========>>>>>>
@@ -87,6 +88,23 @@ app.patch('/allusers/admin/:id', async (req, res) => {
    const result = await AllusersCollection.updateOne(filter, updateDoc)
    res.send(result)
  })
+
+// --------userCartcollection============>>>>
+
+app.post('/mybookmark',async(req,res)=>{
+const bookmark = req.body
+const oldId = req.body.oldId
+const query = {oldId : oldId }
+const exixtingbookMark = await MyBookmarkCollection.findOne(query)
+if(exixtingbookMark) {
+  return res.send({statusbar:'Already Bookmarked'})
+}
+else{
+  const result = await MyBookmarkCollection.insertOne(bookmark)
+  res.send(result)
+}
+})
+
 
 
 
