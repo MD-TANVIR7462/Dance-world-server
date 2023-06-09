@@ -42,6 +42,21 @@ app.post('/allusers', async (req, res) =>{
     const result = await AllusersCollection.insertOne(user);
     res.send(result);
 })
+app.post('/allusersGoogle', async (req, res) =>{
+   
+    const user = req.body;
+    const email = user.email
+    const query = {email : email}
+    const exixtingUser = await AllusersCollection.findOne(query)
+    if(exixtingUser){
+      return res.send({})
+    }
+    else{
+      const result = await AllusersCollection.insertOne(user);
+    res.send(result);
+    }
+    
+})
 
 app.get('/allusers', async (req, res) => {
    const result = await AllusersCollection.find().toArray()
