@@ -31,10 +31,10 @@ async function run() {
     await client.connect();
     const database = client.db("DanceProjectDB");
     const AllusersCollection = database.collection("Allusers");
+    const insClassCollection = database.collection("ClassCollection");
 
 
-
-
+// userCollection===========>>>>>>
 
 app.post('/allusers', async (req, res) =>{
    
@@ -60,6 +60,36 @@ app.patch('/allusers/instractor/:id', async (req, res) => {
    const result = await AllusersCollection.updateOne(filter, updateDoc)
    res.send(result)
  })
+
+app.patch('/allusers/admin/:id', async (req, res) => {
+   const id = req.params.id
+   const filter = { _id: new ObjectId(id) }
+   const updateDoc = {
+     $set: {
+       role: "admin"
+     },
+   };
+   const result = await AllusersCollection.updateOne(filter, updateDoc)
+   res.send(result)
+ })
+
+
+
+// instractorCollection===========>>>>>>
+
+app.get('/instractorclass', async (req, res) => {
+  const result = await insClassCollection.find().toArray()
+  res.send(result)
+})
+
+
+
+
+
+
+
+
+
 
 
     
