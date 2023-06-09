@@ -54,7 +54,7 @@ app.patch('/allusers/instractor/:id', async (req, res) => {
    const filter = { _id: new ObjectId(id) }
    const updateDoc = {
      $set: {
-       role: "instractor"
+       role: "instructor"
      },
    };
    const result = await AllusersCollection.updateOne(filter, updateDoc)
