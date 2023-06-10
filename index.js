@@ -50,7 +50,7 @@ app.post('/allusersGoogle', async (req, res) =>{
     const query = {email : email}
     const exixtingUser = await AllusersCollection.findOne(query)
     if(exixtingUser){
-      return res.send({})
+      return res.send({"status": "Already have an account"})
     }
     else{
       const result = await AllusersCollection.insertOne(user);
@@ -93,16 +93,31 @@ app.patch('/allusers/admin/:id', async (req, res) => {
 
 app.post('/mybookmark',async(req,res)=>{
 const bookmark = req.body
-const oldId = req.body.oldId
-const query = {oldId : oldId }
-const exixtingbookMark = await MyBookmarkCollection.findOne(query)
-if(exixtingbookMark) {
-  return res.send({statusbar:'Already Bookmarked'})
-}
-else{
+// const oldId = req.body.oldId
+// const query = {oldId : oldId }
+// const exixtingbookMark = await MyBookmarkCollection.findOne(query)
+// if(exixtingbookMark) {
+//   return res.send({statusbar:'Already Bookmarked'})
+// }
+// else{
   const result = await MyBookmarkCollection.insertOne(bookmark)
   res.send(result)
-}
+// }
+})
+app.get('/mybookmarkAll',async (req,res)=>{
+  const result = await MyBookmarkCollection.find().toArray()
+  res.send(result)
+})
+
+app.get('/mybookmark',async (req,res)=>{
+  const email = req.query.email
+  console.log(email)
+const query = { userEmail: email}
+
+const result = await MyBookmarkCollection.find(query).toArray()
+
+res.send(result)
+
 })
 
 
