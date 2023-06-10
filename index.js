@@ -111,7 +111,7 @@ app.get('/mybookmarkAll',async (req,res)=>{
 
 app.get('/mybookmark',async (req,res)=>{
   const email = req.query.email
-  console.log(email)
+ 
 const query = { userEmail: email}
 
 const result = await MyBookmarkCollection.find(query).toArray()
@@ -130,6 +130,11 @@ app.get('/instractorclass', async (req, res) => {
   res.send(result)
 })
 
+app.post('/addaclass', async (req, res) => {
+const newclass = req.body
+const result = await insClassCollection.insertOne(newclass)
+res.send(result)
+})
 
 
 
