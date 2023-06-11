@@ -145,7 +145,29 @@ const result = await insClassCollection.find(query).toArray()
 res.send(result)
 })
 
+app.get('/instructorclasses/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await insClassCollection.findOne(query);
+  res.send(result);
+});
 
+
+app.patch('/classupdate/:id', async (req, res) => {
+  const id = req.params.id;
+  const updated = req.body;
+  const filter = { _id: new ObjectId(id) };
+  const updateDoc = {
+    $set: {
+      price: updated.price,
+      className : updated.className,
+      Availableseats: updated.Availableseats,
+      image : updated.image
+    },
+  };
+  const result = await insClassCollection.updateOne(filter, updateDoc);
+  res.send(result);
+});
 
 
 
