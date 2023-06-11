@@ -170,6 +170,23 @@ app.patch('/classupdate/:id', async (req, res) => {
 });
 
 
+// admin work===========>>>>>
+
+app.patch('/classupdateAdmin/:id', async (req, res) => {
+  const id = req.params.id;
+  const updated = req.body;
+  const filter = { _id: new ObjectId(id) };
+  const updateDoc = {
+    $set: {
+     status : updated.status
+
+    },
+  };
+  const result = await insClassCollection.updateOne(filter, updateDoc);
+  res.send(result);
+});
+
+
 
 
 
