@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-  
+
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const database = client.db("DanceProjectDB");
@@ -35,168 +35,182 @@ async function run() {
     const MyBookmarkCollection = database.collection("MyBookmarkCollection");
 
 
-// userCollection===========>>>>>>
+    // userCollection===========>>>>>>
 
-app.post('/allusers', async (req, res) =>{
-   
-    const user = req.body;
-    const result = await AllusersCollection.insertOne(user);
-    res.send(result);
-})
-app.post('/allusersGoogle', async (req, res) =>{
-   
-    const user = req.body;
-    const email = user.email
-    const query = {email : email}
-    const exixtingUser = await AllusersCollection.findOne(query)
-    if(exixtingUser){
-      return res.send({"status": "Already have an account"})
-    }
-    else{
+    app.post('/allusers', async (req, res) => {
+
+      const user = req.body;
       const result = await AllusersCollection.insertOne(user);
-    res.send(result);
-    }
-    
-})
+      res.send(result);
+    })
+    app.post('/allusersGoogle', async (req, res) => {
 
-app.get('/allusers', async (req, res) => {
-   const result = await AllusersCollection.find().toArray()
-   res.send(result)
- })
+      const user = req.body;
+      const email = user.email
+      const query = { email: email }
+      const exixtingUser = await AllusersCollection.findOne(query)
+      if (exixtingUser) {
+        return res.send({ "status": "Already have an account" })
+      }
+      else {
+        const result = await AllusersCollection.insertOne(user);
+        res.send(result);
+      }
 
+    })
 
-app.patch('/allusers/instractor/:id', async (req, res) => {
-   const id = req.params.id
-   const filter = { _id: new ObjectId(id) }
-   const updateDoc = {
-     $set: {
-       role: "instructor"
-     },
-   };
-   const result = await AllusersCollection.updateOne(filter, updateDoc)
-   res.send(result)
- })
-
-app.patch('/allusers/admin/:id', async (req, res) => {
-   const id = req.params.id
-   const filter = { _id: new ObjectId(id) }
-   const updateDoc = {
-     $set: {
-       role: "admin"
-     },
-   };
-   const result = await AllusersCollection.updateOne(filter, updateDoc)
-   res.send(result)
- })
-
-// --------userCartcollection============>>>>
-
-app.post('/mybookmark',async(req,res)=>{
-const bookmark = req.body
-// const oldId = req.body.oldId
-// const query = {oldId : oldId }
-// const exixtingbookMark = await MyBookmarkCollection.findOne(query)
-// if(exixtingbookMark) {
-//   return res.send({statusbar:'Already Bookmarked'})
-// }
-// else{
-  const result = await MyBookmarkCollection.insertOne(bookmark)
-  res.send(result)
-// }
-})
-app.get('/mybookmarkAll',async (req,res)=>{
-  const result = await MyBookmarkCollection.find().toArray()
-  res.send(result)
-})
-
-app.get('/mybookmark',async (req,res)=>{
-  const email = req.query.email
- 
-const query = { userEmail: email}
-
-const result = await MyBookmarkCollection.find(query).toArray()
-
-res.send(result)
-
-})
+    app.get('/allusers', async (req, res) => {
+      const result = await AllusersCollection.find().toArray()
+      res.send(result)
+    })
 
 
+    app.patch('/allusers/instractor/:id', async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const updateDoc = {
+        $set: {
+          role: "instructor"
+        },
+      };
+      const result = await AllusersCollection.updateOne(filter, updateDoc)
+      res.send(result)
+    })
 
+    app.patch('/allusers/admin/:id', async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const updateDoc = {
+        $set: {
+          role: "admin"
+        },
+      };
+      const result = await AllusersCollection.updateOne(filter, updateDoc)
+      res.send(result)
+    })
 
-// instractorCollection===========>>>>>>
+    // --------userCartcollection============>>>>
 
-app.get('/instractorclass', async (req, res) => {
-  const result = await insClassCollection.find().toArray()
-  res.send(result)
-})
+    app.post('/mybookmark', async (req, res) => {
+      const bookmark = req.body
+      // const oldId = req.body.oldId
+      // const query = {oldId : oldId }
+      // const exixtingbookMark = await MyBookmarkCollection.findOne(query)
+      // if(exixtingbookMark) {
+      //   return res.send({statusbar:'Already Bookmarked'})
+      // }
+      // else{
+      const result = await MyBookmarkCollection.insertOne(bookmark)
+      res.send(result)
+      // }
+    })
+    app.get('/mybookmarkAll', async (req, res) => {
+      const result = await MyBookmarkCollection.find().toArray()
+      res.send(result)
+    })
 
-app.post('/addaclass', async (req, res) => {
-const newclass = req.body
-const result = await insClassCollection.insertOne(newclass)
-res.send(result)
-})
+    app.get('/mybookmark', async (req, res) => {
+      const email = req.query.email
 
+      const query = { userEmail: email }
 
-app.get('/instructorclasses', async (req, res) => {
-const email =  req.query.email
-const query = {email : email}
+      const result = await MyBookmarkCollection.find(query).toArray()
 
-const result = await insClassCollection.find(query).toArray()
-res.send(result)
-})
+      res.send(result)
 
-app.get('/instructorclasses/:id', async (req, res) => {
-  const id = req.params.id;
-  const query = { _id: new ObjectId(id) };
-  const result = await insClassCollection.findOne(query);
-  res.send(result);
-});
-
-
-app.patch('/classupdate/:id', async (req, res) => {
-  const id = req.params.id;
-  const updated = req.body;
-  const filter = { _id: new ObjectId(id) };
-  const updateDoc = {
-    $set: {
-      price: updated.price,
-      className : updated.className,
-      Availableseats: updated.Availableseats,
-      image : updated.image
-    },
-  };
-  const result = await insClassCollection.updateOne(filter, updateDoc);
-  res.send(result);
-});
-
-
-// admin work===========>>>>>
-
-app.patch('/classupdateAdmin/:id', async (req, res) => {
-  const id = req.params.id;
-  const updated = req.body;
-  const filter = { _id: new ObjectId(id) };
-  const updateDoc = {
-    $set: {
-     status : updated.status
-
-    },
-  };
-  const result = await insClassCollection.updateOne(filter, updateDoc);
-  res.send(result);
-});
+    })
 
 
 
 
+    // instractorCollection===========>>>>>>
 
-    
+    app.get('/instractorclass', async (req, res) => {
+      const result = await insClassCollection.find().toArray()
+      res.send(result)
+    })
+
+    app.post('/addaclass', async (req, res) => {
+      const newclass = req.body
+      const result = await insClassCollection.insertOne(newclass)
+      res.send(result)
+    })
+
+
+    app.get('/instructorclasses', async (req, res) => {
+      const email = req.query.email
+      const query = { email: email }
+
+      const result = await insClassCollection.find(query).toArray()
+      res.send(result)
+    })
+
+    app.get('/instructorclasses/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await insClassCollection.findOne(query);
+      res.send(result);
+    });
+
+
+    app.patch('/classupdate/:id', async (req, res) => {
+      const id = req.params.id;
+      const updated = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          price: updated.price,
+          className: updated.className,
+          Availableseats: updated.Availableseats,
+          image: updated.image
+        },
+      };
+      const result = await insClassCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+
+    // admin work===========>>>>>
+
+    app.patch('/classupdateAdmin/:id', async (req, res) => {
+      const id = req.params.id;
+      const updated = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status: updated.status
+
+        },
+      };
+      const result = await insClassCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    app.patch('/AdminFeedback/:id', async (req, res) => {
+      const id = req.params.id;
+      const updated = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          Feedback: updated.Feedback
+
+        },
+      };
+      const result = await insClassCollection.updateOne(filter, updateDoc);
+      console.log(result);
+    });
+
+
+
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-   //  await client.close();
+    //  await client.close();
   }
 }
 run().catch(console.dir);
@@ -210,11 +224,11 @@ run().catch(console.dir);
 
 //mongo End//============>>>
 app.get('/', (req, res) => {
-   res.send('hello');
+  res.send('hello');
 });
 
 app.listen(port, () => {
-   console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
 
 
