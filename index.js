@@ -137,7 +137,13 @@ res.send(result)
 })
 
 
+app.get('/instructorclasses', async (req, res) => {
+const email =  req.query.email
+const query = {email : email}
 
+const result = await insClassCollection.find(query).toArray()
+res.send(result)
+})
 
 
 
