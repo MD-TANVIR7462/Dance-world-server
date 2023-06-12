@@ -4,7 +4,7 @@ const port = process.env.PORT || 5000
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const cors = require('cors');
-
+const stripe = require("stripe")(process.env.Payment_Secret);
 
 //milde wares//===========>>>>>>
 app.use(cors());
@@ -32,7 +32,54 @@ async function run() {
     const database = client.db("DanceProjectDB");
     const AllusersCollection = database.collection("Allusers");
     const insClassCollection = database.collection("ClassCollection");
+    const paymentCollection = database.collection("paymentCollection");
     const MyBookmarkCollection = database.collection("MyBookmarkCollection");
+
+
+
+    // payment =================>>>>>>>>>>>>
+
+    app.post("/create-payment-intent", async (req, res) => {
+      const price = req.body.price;
+      const amount = price * 100
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"]
+      });
+
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+
+    })
+
+    app.post('/paymentcomplete', async (req, res) => {
+
+      const newpayment = req.body
+      const id = req.body.oldId
+      const filter = { _id: new ObjectId(id) }
+      const deleteID = newpayment.bookamekID
+      const confirmDelet = { _id: new ObjectId(deleteID)}
+      const updateDoc = {
+        $set: {
+
+          Availableseats: newpayment.Availableseats,
+          students: newpayment.students
+
+        },
+      };
+      const removeBookmark = await MyBookmarkCollection.deleteOne(confirmDelet)
+      const query = await insClassCollection.updateOne(filter,updateDoc)
+      const result = await paymentCollection.insertOne(newpayment);
+      res.send({result,query,removeBookmark});
+    })
+
+
+
+
+
+    // payment end==================>>>>>>>>>
 
 
     // userCollection===========>>>>>>
@@ -127,13 +174,13 @@ async function run() {
       res.send(result);
     })
 
-app.delete('/mybookmarkDelete/:id', async (req, res) => {
-  const id = req.params.id
-  const query = {_id : new ObjectId(id)}
-  const result = await MyBookmarkCollection.deleteOne(query)
-  res.send(result)
+    app.delete('/mybookmarkDelete/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await MyBookmarkCollection.deleteOne(query)
+      res.send(result)
 
-})
+    })
 
 
     // instractorCollection===========>>>>>>
