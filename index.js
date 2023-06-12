@@ -140,13 +140,7 @@ async function run() {
 
     app.post('/mybookmark', async (req, res) => {
       const bookmark = req.body
-      // const oldId = req.body.oldId
-      // const query = {oldId : oldId }
-      // const exixtingbookMark = await MyBookmarkCollection.findOne(query)
-      // if(exixtingbookMark) {
-      //   return res.send({statusbar:'Already Bookmarked'})
-      // }
-      // else{
+    
       const result = await MyBookmarkCollection.insertOne(bookmark)
       res.send(result)
       // }
@@ -166,6 +160,20 @@ async function run() {
       res.send(result)
 
     })
+
+    app.get('/enrolledClass', async (req, res) => {
+      const email = req.query.email
+
+      const query = { userEmail: email }
+
+      const result = await paymentCollection.find(query).toArray()
+
+      res.send(result)
+
+    })
+
+
+
 
     app.get('/paymentBookmark/:id', async (req, res) => {
       const id = req.params.id
